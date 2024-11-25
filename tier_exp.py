@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import subprocess
 import random
 
 import numpy as np
@@ -23,11 +24,12 @@ Tier 6: Subcomponent of component model (Host Job/PID)
 
 def log_process_events(wb_logger_name):
     print(f"Running process for {wb_logger_name}")
-    run_name = wb_logger_name[0]
-    exp_name = wb_logger_name[1]
-    model_name = wb_logger_name[2]
-    component_name = wb_logger_name[3]
-    subcomponent_name = wb_logger_name[4]
+    run_name, exp_name, model_name, component_name, subcomponent_name = wb_logger_name
+    # run_name = wb_logger_name[0]
+    # exp_name = wb_logger_name[1]
+    # model_name = wb_logger_name[2]
+    # component_name = wb_logger_name[3]
+    # subcomponent_name = wb_logger_name[4]
     wandb.init(
         mode="online",
         project=project,
@@ -35,7 +37,7 @@ def log_process_events(wb_logger_name):
         name=run_name,
     )
     wandb.config.update({"learning_rate": 0.01, "batch_size": 2 ** np.random.choice(12),
-                        "exp": exp_name, "model": model_name, "component": component_name, "subcomponent": subcomponent_name})
+                        "exp": exp_name, "model": model_name, "component": int(component_name), "subcomponent": subcomponent_name})
     for epoch in range(10):
         for step in range(10):
             loss = random.uniform(0, 1)
@@ -57,7 +59,7 @@ def grid_experiment():
     """in practice this is fully parallel on multiple cpus/hosts"""
     for exp in ["base", "variant1", "variant2", "variant3"]:
         for wb_logger_name in get_runs(exp):
-            os.system(f"python3 tier_exp.py --model {wb_logger_name}")
+            subprocess.run(["python3", "tier_exp.py", "--model", str(wb_logger_name)])
 
 
 def main():
@@ -67,7 +69,7 @@ def main():
     if args.logger_name is None:
         grid_experiment()
     else:
-        log_process_events(args.logger_name)
+        log_process_events(eval(args.logger_name))
 
 
 if __name__ == "__main__":
