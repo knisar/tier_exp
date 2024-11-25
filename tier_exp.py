@@ -24,7 +24,7 @@ Tier 6: Subcomponent of component model (Host Job/PID)
 def log_process_events(wb_logger_name):
     print(f"Running process for {wb_logger_name}")
     wandb.init(
-        mode="offline",
+        mode="online",
         project=project,
         entity=workspace,
         name=wb_logger_name,
