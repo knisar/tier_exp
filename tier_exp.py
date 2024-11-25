@@ -23,13 +23,19 @@ Tier 6: Subcomponent of component model (Host Job/PID)
 
 def log_process_events(wb_logger_name):
     print(f"Running process for {wb_logger_name}")
+    run_name = wb_logger_name[0]
+    exp_name = wb_logger_name[1]
+    model_name = wb_logger_name[2]
+    component_name = wb_logger_name[3]
+    subcomponent_name = wb_logger_name[4]
     wandb.init(
         mode="online",
         project=project,
         entity=workspace,
-        name=wb_logger_name,
+        name=run_name,
     )
-    wandb.config.update({"learning_rate": 0.01, "batch_size": 2 ** np.random.choice(12)})
+    wandb.config.update({"learning_rate": 0.01, "batch_size": 2 ** np.random.choice(12),
+                        "exp": exp_name, "model": model_name, "component": component_name, "subcomponent": subcomponent_name})
     for epoch in range(10):
         for step in range(10):
             loss = random.uniform(0, 1)
@@ -44,12 +50,12 @@ def get_runs(exp):
         for ii, component in enumerate([str(c + 1) for c in range(20)]):
             for subcomponent in range(nsubcomp[ii]):
                 run = f"{exp}_{model}_{component}_{subcomponent}"
-                yield run
+                yield run, exp, model, component, subcomponent
 
 
 def grid_experiment():
     """in practice this is fully parallel on multiple cpus/hosts"""
-    for exp in ["variant2", "variant3"]:
+    for exp in ["base", "variant1", "variant2", "variant3"]:
         for wb_logger_name in get_runs(exp):
             os.system(f"python3 tier_exp.py --model {wb_logger_name}")
 
