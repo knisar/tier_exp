@@ -40,7 +40,7 @@ def log_process_events(wb_logger_name):
 
 def get_runs(exp):
     nsubcomp = [18, 16, 16, 12, 16, 15, 12, 16, 19, 15, 11, 19, 10, 17, 15, 17, 18, 13, 17, 16]
-    for model in [f"model_{l}" for l in list("a")]:
+    for model in [f"model_{l}" for l in list("abcdef")]:
         for ii, component in enumerate([str(c + 1) for c in range(20)]):
             for subcomponent in range(nsubcomp[ii]):
                 run = f"{exp}_{model}_{component}_{subcomponent}"
@@ -49,7 +49,7 @@ def get_runs(exp):
 
 def grid_experiment():
     """in practice this is fully parallel on multiple cpus/hosts"""
-    for exp in ["variant2"]:
+    for exp in ["variant2", "variant3"]:
         for wb_logger_name in get_runs(exp):
             os.system(f"python3 tier_exp.py --model {wb_logger_name}")
 
